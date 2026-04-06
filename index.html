@@ -240,7 +240,7 @@ ul.ck li::before{content:'→';position:absolute;left:0;color:var(--primary);fon
 
 /* CONTACTS */
 .contact-grid{display:grid;grid-template-columns:1fr;gap:8px}
-.contact-row{display:grid;grid-template-columns:28px 1fr 1fr 110px 120px 78px;gap:8px;align-items:center;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:10px 14px;transition:border-color .2s}
+.contact-row{display:grid;grid-template-columns:28px 1fr 1fr 110px 120px 78px 1fr 1fr 32px;gap:8px;align-items:center;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:10px 14px;transition:border-color .2s}
 .contact-row:hover{border-color:rgba(56,189,248,.28)}
 .contact-row.hdr{background:rgba(56,189,248,.07);border-color:rgba(56,189,248,.22);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--primary)}
 .cnum{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--muted)}
@@ -998,7 +998,7 @@ ul.ck li::before{content:'→';position:absolute;left:0;color:var(--primary);fon
   <div class="note note-gold" style="margin-bottom:18px"><strong>💡 Подход:</strong> Не продавай директно. Разкажи историята — защо го правиш, как помага на малкия бизнес. Искай <em>препоръки и въведения</em>, не пари. Кликни върху статуса за смяна.</div>
 
   <div class="contact-grid">
-    <div class="contact-row hdr"><div>#</div><div>Пълно Име</div><div>Фирма / Бранш</div><div>Приоритет</div><div>Статус</div><div>Дата</div></div>
+    <div class="contact-row hdr"><div>#</div><div>Пълно Име</div><div>Фирма / Бранш</div><div>Приоритет</div><div>Статус</div><div>Дата</div><div>Коментар от среща</div><div>Следващи стъпки</div><div></div></div>
     <div id="contacts-list"></div>
   </div>
 
@@ -1612,6 +1612,8 @@ function saveContacts() {
     priority: r.querySelector('.cp').value,
     status: parseInt(r.querySelector('.cs').value || '0'),
     date: r.querySelector('.cd').value,
+    comment: r.querySelector('.cm')?.value || '',
+    next: r.querySelector('.cnx')?.value || '',
   }));
   masterSet('contacts', data);
   updateContactSummary(data);
@@ -1652,6 +1654,8 @@ function renderContacts() {
       <div><input type="hidden" class="cs" value="${c.status||0}">
         <button class="sbtn ${sCls[c.status||0]}" onclick="cycleStatus(this)">${statuses[c.status||0]}</button></div>
       <input class="cd" type="date" value="${c.date||''}" oninput="autoSave()" style="font-size:11px">
+      <input class="cm" type="text" placeholder="Коментар от среща…" value="${esc(c.comment||'')}" oninput="autoSave()" style="font-size:11px">
+      <input class="cnx" type="text" placeholder="Следващи стъпки…" value="${esc(c.next||'')}" oninput="autoSave()" style="font-size:11px">
       <button onclick="deleteContactRow(this)" style="background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:2px 6px;border-radius:4px;transition:color .15s" title="Изтрий" onmouseover="this.style.color='var(--accent3)'" onmouseout="this.style.color='var(--muted)'">🗑</button>
     </div>`).join('');
   updateContactSummary(data);
