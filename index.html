@@ -997,6 +997,34 @@ ul.ck li::before{content:'→';position:absolute;left:0;color:var(--primary);fon
 
   <div class="note note-gold" style="margin-bottom:18px"><strong>💡 Подход:</strong> Не продавай директно. Разкажи историята — защо го правиш, как помага на малкия бизнес. Искай <em>препоръки и въведения</em>, не пари. Кликни върху статуса за смяна.</div>
 
+  <!-- FILTER TOOLBAR -->
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 16px;">
+    <input id="ct-search" type="text" placeholder="🔍 Търси по ime или фирма…" oninput="ctApplyFilters()" style="background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:6px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;outline:none;width:200px;transition:border-color .18s;">
+    <select id="ct-status-filter" onchange="ctApplyFilters()" style="background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:6px 10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;outline:none;cursor:pointer;">
+      <option value="">Всички статуси</option>
+      <option value="0">⏳ Предстои</option>
+      <option value="1">📞 Свързани</option>
+      <option value="2">🤝 Срещнати</option>
+      <option value="3">✅ Клиент</option>
+    </select>
+    <select id="ct-prio-filter" onchange="ctApplyFilters()" style="background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:6px 10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;outline:none;cursor:pointer;">
+      <option value="">Всички приоритети</option>
+      <option value="Висок">🔴 Висок</option>
+      <option value="Среден">🟡 Среден</option>
+      <option value="Нисък">🟢 Нисък</option>
+    </select>
+    <select id="ct-sort" onchange="ctApplyFilters()" style="background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:6px 10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;outline:none;cursor:pointer;">
+      <option value="default">Сортирай по…</option>
+      <option value="date-asc">📅 Дата ↑ (най-стара)</option>
+      <option value="date-desc">📅 Дата ↓ (най-нова)</option>
+      <option value="name-asc">🔤 Ime А→Я</option>
+      <option value="status-asc">📊 Статус</option>
+      <option value="prio-desc">⚡ Приоритет (Висок първо)</option>
+    </select>
+    <button onclick="ctResetFilters()" style="background:transparent;border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .18s;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">✕ Изчисти</button>
+    <span id="ct-count" style="font-size:11px;color:var(--muted);margin-left:auto;"></span>
+  </div>
+
   <div class="contact-grid">
     <div class="contact-row hdr"><div>#</div><div>Пълно Име</div><div>Фирма / Бранш</div><div>Приоритет</div><div>Статус</div><div>Дата</div><div>Коментар от среща</div><div>Следващи стъпки</div><div></div></div>
     <div id="contacts-list"></div>
@@ -1694,6 +1722,68 @@ function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').repl
 
 let saveTimer;
 function autoSave() { clearTimeout(saveTimer); saveTimer = setTimeout(saveContacts, 700); }
+
+// ── FILTER & SORT ──
+function ctApplyFilters() {
+  const search = (document.getElementById('ct-search')?.value || '').toLowerCase();
+  const statusF = document.getElementById('ct-status-filter')?.value;
+  const prioF = document.getElementById('ct-prio-filter')?.value;
+  const sort = document.getElementById('ct-sort')?.value || 'default';
+
+  const rows = Array.from(document.querySelectorAll('.cr'));
+  let visible = 0;
+
+  // Collect data
+  let data = rows.map(r => ({
+    el: r,
+    name: r.querySelector('.cn')?.value || '',
+    company: r.querySelector('.cc')?.value || '',
+    priority: r.querySelector('.cp')?.value || '',
+    status: r.querySelector('.cs')?.value || '0',
+    date: r.querySelector('.cd')?.value || '',
+  }));
+
+  // Filter
+  data = data.filter(d => {
+    const matchSearch = !search || d.name.toLowerCase().includes(search) || d.company.toLowerCase().includes(search);
+    const matchStatus = !statusF || d.status === statusF;
+    const matchPrio = !prioF || d.priority === prioF;
+    return matchSearch && matchStatus && matchPrio;
+  });
+
+  // Sort
+  const prioOrder = {'Висок':0,'Среден':1,'Нисък':2};
+  if (sort === 'date-asc') data.sort((a,b) => (a.date||'9999') > (b.date||'9999') ? 1 : -1);
+  else if (sort === 'date-desc') data.sort((a,b) => (a.date||'') < (b.date||'') ? 1 : -1);
+  else if (sort === 'name-asc') data.sort((a,b) => a.name.localeCompare(b.name, 'bg'));
+  else if (sort === 'status-asc') data.sort((a,b) => parseInt(a.status) - parseInt(b.status));
+  else if (sort === 'prio-desc') data.sort((a,b) => (prioOrder[a.priority]||1) - (prioOrder[b.priority]||1));
+
+  // Show/hide
+  const visibleIds = new Set(data.map(d => d.el));
+  rows.forEach(r => {
+    const show = visibleIds.has(r);
+    r.style.display = show ? '' : 'none';
+    if (show) visible++;
+  });
+
+  // Reorder visible rows in DOM
+  const list = document.getElementById('contacts-list');
+  data.forEach(d => list.appendChild(d.el));
+
+  // Update counter
+  const total = rows.filter(r => r.querySelector('.cn')?.value?.trim()).length;
+  const countEl = document.getElementById('ct-count');
+  if (countEl) countEl.textContent = visible < total ? `${visible} от ${total} контакта` : `${total} контакта`;
+}
+
+function ctResetFilters() {
+  document.getElementById('ct-search').value = '';
+  document.getElementById('ct-status-filter').value = '';
+  document.getElementById('ct-prio-filter').value = '';
+  document.getElementById('ct-sort').value = 'default';
+  ctApplyFilters();
+}
 
 function exportContacts() {
   const rows = document.querySelectorAll('.cr');
