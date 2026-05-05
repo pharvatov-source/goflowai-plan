@@ -123,9 +123,10 @@ body.pw-locked > *:not(#pw-screen) {
   /* MC table scroll hint */
   .mc-table-wrap::before { content:'← скролирай хоризонтално →'; display:block; text-align:center; font-size:10px; color:var(--muted); padding:4px 0 6px }
   /* contact row on mobile — show all fields stacked */
-  .contact-row { grid-template-columns:1fr !important; padding:10px }
+  .cr-top { grid-template-columns:24px 1fr !important }
+  .cr-top > *:nth-child(n+3) { display:none }
   .contact-row.hdr { display:none }
-  .contact-row > * { display:block !important }
+  .cr-bottom { grid-template-columns:1fr !important }
   .cnum { font-weight:700; color:var(--primary) }
 }
 
@@ -259,9 +260,12 @@ ul.ck li::before{content:'→';position:absolute;left:0;color:var(--primary);fon
 
 /* CONTACTS */
 .contact-grid{display:grid;grid-template-columns:1fr;gap:8px}
-.contact-row{display:grid;grid-template-columns:28px 1fr 1fr 110px 120px 78px 1fr 1fr 32px;gap:8px;align-items:start;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:10px 14px;transition:border-color .2s}
+.contact-row{display:flex;flex-direction:column;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:10px 14px;transition:border-color .2s}
+.cr-top{display:grid;grid-template-columns:28px 1fr 1fr 110px 120px 78px 32px;gap:8px;align-items:center}
+.cr-bottom{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cr-bottom-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:3px}
 .contact-row:hover{border-color:rgba(56,189,248,.28)}
-.contact-row.hdr{background:rgba(56,189,248,.07);border-color:rgba(56,189,248,.22);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--primary)}
+.contact-row.hdr{background:rgba(56,189,248,.07);border-color:rgba(56,189,248,.22);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--primary)}.contact-row.hdr .cr-bottom{display:none}
 .cnum{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--muted)}
 .contact-row input,.contact-row select,.contact-row textarea{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:6px;padding:5px 9px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;width:100%;outline:none;transition:border-color .18s}
 .contact-row textarea{resize:vertical;line-height:1.5;overflow-wrap:break-word;word-break:break-word;min-height:48px}
@@ -323,7 +327,7 @@ ul.ck li::before{content:'→';position:absolute;left:0;color:var(--primary);fon
 .phase-name{font-size:13px;font-weight:600;color:#fff;margin-bottom:3px}
 .phase-days{font-size:11px;color:var(--muted)}
 
-@media(max-width:700px){.phase-bar{grid-template-columns:1fr 1fr}.contact-row{grid-template-columns:24px 1fr 1fr}.contact-row>*:nth-child(n+4){display:none}.hdr>*:nth-child(n+4){display:none}}
+@media(max-width:700px){.phase-bar{grid-template-columns:1fr 1fr}.cr-top{grid-template-columns:24px 1fr 1fr !important}.cr-top>*:nth-child(n+4){display:none}}
 @media print{.tabs{display:none}.section{display:block!important;page-break-before:always}}
 </style>
 </head>
@@ -1063,7 +1067,7 @@ ul.ck li::before{content:'→';position:absolute;left:0;color:var(--primary);fon
   </div>
 
   <div class="contact-grid">
-    <div class="contact-row hdr"><div>#</div><div>Пълно Име</div><div>Фирма / Бранш</div><div>Приоритет</div><div>Статус</div><div>Дата</div><div>Коментар от среща</div><div>Следващи стъпки</div><div></div></div>
+    <div class="contact-row hdr"><div class="cr-top"><div>#</div><div>Пълно Име</div><div>Фирма / Бранш</div><div>Приоритет</div><div>Статус</div><div>Дата</div><div></div></div></div>
     <div id="contacts-list"></div>
   </div>
 
@@ -1711,20 +1715,30 @@ function renderContacts() {
   const list = document.getElementById('contacts-list');
   list.innerHTML = data.map((c, i) => `
     <div class="contact-row cr">
-      <div class="cnum">${String(i+1).padStart(2,'0')}</div>
-      <input class="cn" type="text" placeholder="Пълно ime…" value="${esc(c.name)}" oninput="autoSave()">
-      <input class="cc" type="text" placeholder="Фирма / бранш…" value="${esc(c.company)}" oninput="autoSave()">
-      <select class="cp" onchange="autoSave()">
-        <option${c.priority==='Висок'?' selected':''}>Висок</option>
-        <option${(!c.priority||c.priority==='Среден')?' selected':''}>Среден</option>
-        <option${c.priority==='Нисък'?' selected':''}>Нисък</option>
-      </select>
-      <div><input type="hidden" class="cs" value="${c.status||0}">
-        <button class="sbtn ${sCls[c.status||0]}" onclick="cycleStatus(this)">${statuses[c.status||0]}</button></div>
-      <input class="cd" type="date" value="${c.date||''}" oninput="autoSave()" style="font-size:11px">
-      <textarea class="cm" placeholder="Коментар от среща…" oninput="autoSave()" rows="2">${esc(c.comment||'')}</textarea>
-      <textarea class="cnx" placeholder="Следващи стъпки…" oninput="autoSave()" rows="2">${esc(c.next||'')}</textarea>
-      <button onclick="deleteContactRow(this)" style="background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:2px 6px;border-radius:4px;transition:color .15s" title="Изтрий" onmouseover="this.style.color='var(--accent3)'" onmouseout="this.style.color='var(--muted)'">🗑</button>
+      <div class="cr-top">
+        <div class="cnum">${String(i+1).padStart(2,'0')}</div>
+        <input class="cn" type="text" placeholder="Пълно ime…" value="${esc(c.name)}" oninput="autoSave()">
+        <input class="cc" type="text" placeholder="Фирма / бранш…" value="${esc(c.company)}" oninput="autoSave()">
+        <select class="cp" onchange="autoSave()">
+          <option${c.priority==='Висок'?' selected':''}>Висок</option>
+          <option${(!c.priority||c.priority==='Среден')?' selected':''}>Среден</option>
+          <option${c.priority==='Нисък'?' selected':''}>Нисък</option>
+        </select>
+        <div><input type="hidden" class="cs" value="${c.status||0}">
+          <button class="sbtn ${sCls[c.status||0]}" onclick="cycleStatus(this)">${statuses[c.status||0]}</button></div>
+        <input class="cd" type="date" value="${c.date||''}" oninput="autoSave()" style="font-size:11px">
+        <button onclick="deleteContactRow(this)" style="background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:2px 6px;border-radius:4px;transition:color .15s" title="Изтрий" onmouseover="this.style.color='var(--accent3)'" onmouseout="this.style.color='var(--muted)'">🗑</button>
+      </div>
+      <div class="cr-bottom">
+        <div>
+          <div class="cr-bottom-label">💬 Коментар от среща</div>
+          <textarea class="cm" placeholder="Добави коментар от срещата…" oninput="autoSave()" rows="2">${esc(c.comment||'')}</textarea>
+        </div>
+        <div>
+          <div class="cr-bottom-label">➡️ Следващи стъпки</div>
+          <textarea class="cnx" placeholder="Какво следва…" oninput="autoSave()" rows="2">${esc(c.next||'')}</textarea>
+        </div>
+      </div>
     </div>`).join('');
   updateContactSummary(data);
 }
