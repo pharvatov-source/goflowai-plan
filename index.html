@@ -110,6 +110,25 @@ body.pw-locked > *:not(#pw-screen) {
   visibility: hidden !important;
   pointer-events: none !important;
 }
+
+/* ── MOBILE NAV ── */
+.mob-nav-wrap { display:none }
+@media(max-width:640px) {
+  .tabs { display:none }
+  .mob-nav-wrap { display:block; position:sticky; top:0; z-index:100; padding:10px 16px; background:var(--surface); border-bottom:1px solid var(--border) }
+  .mob-nav-sel { width:100%; padding:11px 14px; background:rgba(56,189,248,.08); border:1px solid rgba(56,189,248,.3); border-radius:10px; color:var(--text); font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; outline:none; -webkit-appearance:none; appearance:none; cursor:pointer; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2338BDF8' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 14px center }
+  .mob-nav-sel option { background:#0d1a2e; color:#fff }
+  /* make content padding smaller on mobile */
+  .content { padding:16px 12px }
+  /* MC table scroll hint */
+  .mc-table-wrap::before { content:'← скролирай хоризонтално →'; display:block; text-align:center; font-size:10px; color:var(--muted); padding:4px 0 6px }
+  /* contact row on mobile — show all fields stacked */
+  .contact-row { grid-template-columns:1fr !important; padding:10px }
+  .contact-row.hdr { display:none }
+  .contact-row > * { display:block !important }
+  .cnum { font-weight:700; color:var(--primary) }
+}
+
 </style>
 <style>
 :root {
@@ -240,12 +259,13 @@ ul.ck li::before{content:'→';position:absolute;left:0;color:var(--primary);fon
 
 /* CONTACTS */
 .contact-grid{display:grid;grid-template-columns:1fr;gap:8px}
-.contact-row{display:grid;grid-template-columns:28px 1fr 1fr 110px 120px 78px 1fr 1fr 32px;gap:8px;align-items:center;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:10px 14px;transition:border-color .2s}
+.contact-row{display:grid;grid-template-columns:28px 1fr 1fr 110px 120px 78px 1fr 1fr 32px;gap:8px;align-items:start;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:10px 14px;transition:border-color .2s}
 .contact-row:hover{border-color:rgba(56,189,248,.28)}
 .contact-row.hdr{background:rgba(56,189,248,.07);border-color:rgba(56,189,248,.22);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--primary)}
 .cnum{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--muted)}
-.contact-row input,.contact-row select{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:6px;padding:5px 9px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;width:100%;outline:none;transition:border-color .18s}
-.contact-row input:focus,.contact-row select:focus{border-color:var(--primary);background:rgba(56,189,248,.06)}
+.contact-row input,.contact-row select,.contact-row textarea{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:6px;padding:5px 9px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;width:100%;outline:none;transition:border-color .18s}
+.contact-row textarea{resize:vertical;line-height:1.5;overflow-wrap:break-word;word-break:break-word;min-height:48px}
+.contact-row input:focus,.contact-row select:focus,.contact-row textarea:focus{border-color:var(--primary);background:rgba(56,189,248,.06)}
 .contact-row select option{background:#0d1a2e}
 .sbtn{display:inline-flex;align-items:center;justify-content:center;width:100%;padding:5px 8px;border-radius:6px;border:none;font-size:11px;font-weight:600;cursor:pointer;transition:all .18s;white-space:nowrap}
 .s0{background:rgba(251,191,36,.1);color:var(--gold);border:1px solid rgba(251,191,36,.28)}
@@ -484,6 +504,23 @@ ul.ck li::before{content:'→';position:absolute;left:0;color:var(--primary);fon
   <button class="tab-btn" onclick="showTab('daily',this)">📅 60 Дни · Ден по ден</button>
   <button class="tab-btn" onclick="showTab('medical',this)">🏥 Медицински центрове</button>
   <button class="tab-btn" onclick="showTab('mytasks',this)">➕ Моите задачи</button>
+</div>
+<div class="mob-nav-wrap">
+  <select class="mob-nav-sel" onchange="showTab(this.value);this.blur()">
+    <option value="overview">📋 Обзор</option>
+    <option value="tasks">✅ Задачи</option>
+    <option value="seo">🔍 SEO</option>
+    <option value="social">📱 Социални мрежи</option>
+    <option value="content">✍️ Готово съдържание</option>
+    <option value="contacts">🤝 30 Контакта</option>
+    <option value="adwords">⚡ Google Ads</option>
+    <option value="channels">🎯 Канали</option>
+    <option value="automation">🤖 AI Автоматизация</option>
+    <option value="scripts">💬 Скриптове</option>
+    <option value="daily">📅 60 Дни · Ден по ден</option>
+    <option value="medical">🏥 Медицински центрове</option>
+    <option value="mytasks">➕ Моите задачи</option>
+  </select>
 </div>
 
 <div class="content">
@@ -1366,6 +1403,9 @@ function showTab(id, btn) {
   document.getElementById('section-' + id).classList.add('active');
   if (btn) btn.classList.add('active');
   else document.querySelector(`[onclick*="${id}"]`)?.classList.add('active');
+  // sync mobile dropdown
+  const sel = document.querySelector('.mob-nav-sel');
+  if (sel) sel.value = id;
   // Разнеси custom задачи в секцията при отваряне
   setTimeout(() => mtInjectIntoSections(id), 50);
 }
@@ -1682,8 +1722,8 @@ function renderContacts() {
       <div><input type="hidden" class="cs" value="${c.status||0}">
         <button class="sbtn ${sCls[c.status||0]}" onclick="cycleStatus(this)">${statuses[c.status||0]}</button></div>
       <input class="cd" type="date" value="${c.date||''}" oninput="autoSave()" style="font-size:11px">
-      <input class="cm" type="text" placeholder="Коментар от среща…" value="${esc(c.comment||'')}" oninput="autoSave()" style="font-size:11px">
-      <input class="cnx" type="text" placeholder="Следващи стъпки…" value="${esc(c.next||'')}" oninput="autoSave()" style="font-size:11px">
+      <textarea class="cm" placeholder="Коментар от среща…" oninput="autoSave()" rows="2">${esc(c.comment||'')}</textarea>
+      <textarea class="cnx" placeholder="Следващи стъпки…" oninput="autoSave()" rows="2">${esc(c.next||'')}</textarea>
       <button onclick="deleteContactRow(this)" style="background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:2px 6px;border-radius:4px;transition:color .15s" title="Изтрий" onmouseover="this.style.color='var(--accent3)'" onmouseout="this.style.color='var(--muted)'">🗑</button>
     </div>`).join('');
   updateContactSummary(data);
@@ -2934,7 +2974,7 @@ function mtEditFromSection(id) {
 .mc-city-badge { display:inline-flex;align-items:center;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap }
 .mc-sofia { background:rgba(56,189,248,.12);color:var(--primary);border:1px solid rgba(56,189,248,.25) }
 .mc-varna { background:rgba(52,211,153,.12);color:var(--accent2);border:1px solid rgba(52,211,153,.25) }
-.mc-notes-inp { background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:4px 8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:11px;outline:none;width:100%;min-width:130px;transition:border-color .18s }
+.mc-notes-inp { background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:4px 8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:11px;outline:none;width:100%;min-width:160px;min-height:52px;resize:vertical;line-height:1.5;overflow-wrap:break-word;word-break:break-word;transition:border-color .18s }
 .mc-notes-inp:focus { border-color:var(--primary) }
 .mc-export-btn { background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.25);border-radius:8px;padding:7px 16px;font-size:12px;font-weight:600;color:var(--accent2);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .18s }
 .mc-export-btn:hover { background:rgba(52,211,153,.2) }
@@ -2947,8 +2987,8 @@ function mtEditFromSection(id) {
 
   <div class="mc-stats">
     <div class="mc-stat-card"><span class="mc-stat-val" id="mc-total" style="color:var(--primary)">70</span><span class="mc-stat-lbl">Общо центрове</span></div>
-    <div class="mc-stat-card"><span class="mc-stat-val" id="mc-sofia-cnt" style="color:var(--primary)">50</span><span class="mc-stat-lbl">София</span></div>
-    <div class="mc-stat-card"><span class="mc-stat-val" id="mc-varna-cnt" style="color:var(--accent2)">20</span><span class="mc-stat-lbl">Варна</span></div>
+    <div class="mc-stat-card"><span class="mc-stat-val" id="mc-sofia-cnt" style="color:var(--primary)">150</span><span class="mc-stat-lbl">София</span></div>
+    <div class="mc-stat-card"><span class="mc-stat-val" id="mc-varna-cnt" style="color:var(--accent2)">100</span><span class="mc-stat-lbl">Варна</span></div>
     <div class="mc-stat-card"><span class="mc-stat-val" id="mc-contacted" style="color:var(--gold)">0</span><span class="mc-stat-lbl">Контактувани</span></div>
     <div class="mc-stat-card"><span class="mc-stat-val" id="mc-meetings" style="color:var(--accent3)">0</span><span class="mc-stat-lbl">Срещи</span></div>
     <div class="mc-stat-card"><span class="mc-stat-val" id="mc-clients" style="color:var(--accent2)">0</span><span class="mc-stat-lbl">Клиенти</span></div>
@@ -2980,7 +3020,7 @@ function mtEditFromSection(id) {
           <th>Предмет на дейност</th>
           <th>Екип</th>
           <th>Статус</th>
-          <th>Бележки</th>
+          <th>Бележки</th><th>Сайт</th>
         </tr>
       </thead>
       <tbody id="mc-tbody"></tbody>
@@ -3069,10 +3109,190 @@ const MC_DATA = [
   {id:68,city:'varna',name:'МЦ Дерматоцентър Варна',phone:'052 634 120',email:'dermcenter.varna@gmail.com',loc:'ул. Шипка 17, Варна Център',act:'Дерматология, козметична дерматология, лазер',team:'8–12',web:'—'},
   {id:69,city:'varna',name:'МЦ Кардиомед Варна',phone:'052 621 445',email:'cardiomed.varna@abv.bg',loc:'ул. Дебър 19, Варна',act:'Кардиология, ехокардиография, холтер',team:'8–12',web:'—'},
   {id:70,city:'varna',name:'МЦ Надежда Варна',phone:'052 574 320',email:'nadejda.varna@abv.bg',loc:'ж.к. Чайка, ул. Студентска 5, Варна',act:'Акушерство, гинекология, репродуктивна медицина',team:'10–20',web:'—'},
+  {id:71,city:'sofia',name:'Клиника Естетика София',phone:'02 981 22 44',email:'info@estetica-sofia.bg',loc:'бул. Витоша 89, Триадица',act:'Естетична хирургия, липосукция, ринопластика',team:'15–25',web:'estetica-sofia.bg'},
+  {id:72,city:'sofia',name:'МЦ Бел Ви — Естетична Медицина',phone:'02 963 14 78',email:'info@belvi.bg',loc:'ул. Граф Игнатиев 46, Триадица',act:'Ботокс, филъри, лазерна епилация, мезотерапия',team:'10–15',web:'belvi.bg'},
+  {id:73,city:'sofia',name:'Клиника Пластик Арт',phone:'02 851 36 90',email:'info@plasticart.bg',loc:'ул. Лъвски клуб 8, Оборище',act:'Пластична хирургия, увеличаване на гърди, блефаропластика',team:'12–20',web:'plasticart.bg'},
+  {id:74,city:'sofia',name:'МЦ Дермаклиник',phone:'02 944 72 15',email:'info@dermaclinic.bg',loc:'бул. Черни Връх 25, Лозенец',act:'Дерматология, козметична дерматология, PRP терапия',team:'8–12',web:'dermaclinic.bg'},
+  {id:75,city:'sofia',name:'Клиника Биоестетик',phone:'02 971 45 82',email:'info@bioesthetic.bg',loc:'ж.к. Изток, ул. Фредерик Жолио-Кюри 20',act:'Естетична медицина, хиалурон, конци Aptos',team:'10–15',web:'bioesthetic.bg'},
+  {id:76,city:'sofia',name:'МЦ Скинмед',phone:'02 863 29 11',email:'info@skinmed.bg',loc:'ул. Патриарх Евтимий 90, Триадица',act:'Дерматология, лазер CO2, фракционен лазер, PRP',team:'8–12',web:'skinmed.bg'},
+  {id:77,city:'sofia',name:'Клиника Медана',phone:'02 851 90 20',email:'info@medana-clinic.bg',loc:'бул. Александър Стамболийски 132, Зона Б',act:'Естетична гинекология, интимна пластика',team:'6–10',web:'medana-clinic.bg'},
+  {id:78,city:'sofia',name:'МЦ Лазермед',phone:'02 963 55 17',email:'lazermed@abv.bg',loc:'ул. Пиротска 56, Зона Б',act:'Лазерна дерматология, фотоподмладяване, IPL',team:'6–10',web:'—'},
+  {id:79,city:'sofia',name:'Клиника ЕвроЕстетик',phone:'02 944 18 93',email:'info@euroesthetic.bg',loc:'бул. Тодор Александров 102, Зона Б',act:'Ботокс, нишки, хиалурон, LPG масаж',team:'8–12',web:'euroesthetic.bg'},
+  {id:80,city:'sofia',name:'МЦ Синтия — Козметична Дерматология',phone:'02 971 34 56',email:'sintia.mc@abv.bg',loc:'ж.к. Дружба 2, ул. Илия Бешков 4',act:'Козметична дерматология, химически пилинг, мезотерапия',team:'5–8',web:'—'},
+  {id:81,city:'sofia',name:'Клиника Ортос',phone:'02 963 88 22',email:'info@orthos-clinic.bg',loc:'бул. Скобелев 44, Красно село',act:'Ортопедия, артроскопия, ендопротезиране',team:'15–25',web:'orthos-clinic.bg'},
+  {id:82,city:'sofia',name:'МЦ Спортортомед',phone:'02 851 17 63',email:'sportortomed@abv.bg',loc:'ул. Тунджа 4, Оборище',act:'Спортна ортопедия, рехабилитация след травми',team:'10–15',web:'—'},
+  {id:83,city:'sofia',name:'Клиника Бон Медика',phone:'02 944 93 41',email:'bonmedica@abv.bg',loc:'ул. Баку 18, Изток',act:'Ортопедия, гръбначна хирургия, кинезитерапия',team:'12–18',web:'—'},
+  {id:84,city:'sofia',name:'МЦ Травма Център',phone:'02 971 26 87',email:'traumacenter.mc@gmail.com',loc:'бул. Черни Връх 67, Лозенец',act:'Травматология, спешна ортопедична помощ',team:'10–15',web:'—'},
+  {id:85,city:'sofia',name:'МЦ АртроМед',phone:'02 852 44 19',email:'arthromed.sofia@abv.bg',loc:'ул. Враца 10, Подуяне',act:'Артроскопска хирургия, колянна и раменна хирургия',team:'8–12',web:'—'},
+  {id:86,city:'sofia',name:'Клиника Гръбначен Център',phone:'02 963 71 05',email:'spinecenter@abv.bg',loc:'ул. Г.С. Раковски 128, Триадица',act:'Гръбначна хирургия, неврохирургия, рехабилитация',team:'10–18',web:'—'},
+  {id:87,city:'sofia',name:'МЦ Ставамед',phone:'02 944 55 28',email:'stavamed@abv.bg',loc:'бул. Янко Сакъзов 14, Оборище',act:'Ортопедия — стави, протези, физиотерапия',team:'8–12',web:'—'},
+  {id:88,city:'sofia',name:'Клиника Визус',phone:'02 963 44 22',email:'info@vizus.bg',loc:'ул. Шипченски проход 30, Слатина',act:'Офталмология, LASIK, катаракта, глаукома',team:'15–25',web:'vizus.bg'},
+  {id:89,city:'sofia',name:'МЦ Оптик Айкеър',phone:'02 851 88 34',email:'opticeyecare@abv.bg',loc:'бул. Витоша 145, Триадица',act:'Офталмология, контактни лещи, рефракционна хирургия',team:'8–12',web:'—'},
+  {id:90,city:'sofia',name:'Клиника ЕyeMed',phone:'02 971 60 43',email:'eyemed.sofia@gmail.com',loc:'ж.к. Изток, бул. Цариградско шосе 35',act:'Офталмология, лазерна корекция на зрение, диабетна ретинопатия',team:'10–15',web:'—'},
+  {id:91,city:'sofia',name:'МЦ Окулист Офталмологичен Център',phone:'02 944 29 11',email:'okulist@abv.bg',loc:'ул. Граф Игнатиев 68, Триадица',act:'Офталмология, детска офталмология, глаукома',team:'8–12',web:'—'},
+  {id:92,city:'sofia',name:'МЦ УНГ Медика',phone:'02 963 13 48',email:'ungmedika@abv.bg',loc:'бул. Скобелев 18, Красно село',act:'Оториноларингология, ендоскопска синус хирургия',team:'8–12',web:'—'},
+  {id:93,city:'sofia',name:'Клиника Синус',phone:'02 852 37 26',email:'sinusclinic@abv.bg',loc:'ул. Опълченска 28, Зона Б',act:'УНГ, хирургия на слуха, алергичен ринит',team:'6–10',web:'—'},
+  {id:94,city:'sofia',name:'МЦ ОтоМед',phone:'02 971 48 92',email:'otomed.mc@gmail.com',loc:'ж.к. Младост 1, ул. Свети Кирил и Методий 8',act:'УНГ, аудиология, слухови апарати',team:'5–8',web:'—'},
+  {id:95,city:'sofia',name:'Дентален Център Смайл Арт',phone:'02 963 99 11',email:'info@smileart.bg',loc:'ул. Г.С. Раковски 74, Триадица',act:'Естетична стоматология, импланти, ортодонция',team:'10–15',web:'smileart.bg'},
+  {id:96,city:'sofia',name:'МЦ Дент Инсайд',phone:'02 851 43 77',email:'dentinside@abv.bg',loc:'бул. Александър Малинов 48А, Младост',act:'Дентална имплантология, протетика, ортодонция',team:'8–12',web:'—'},
+  {id:97,city:'sofia',name:'Клиника Орал Хелт',phone:'02 944 64 58',email:'oralhealth.sofia@gmail.com',loc:'ул. Баку 6, Изток',act:'Орална хирургия, имплантология, зъбно избелване',team:'8–12',web:'—'},
+  {id:98,city:'sofia',name:'Дентален Център Вита Дент',phone:'02 971 88 23',email:'vitadent@abv.bg',loc:'ж.к. Дружба 1, бул. Ботевградско шосе 21',act:'Обща стоматология, детска дентална медицина',team:'6–10',web:'—'},
+  {id:99,city:'sofia',name:'МЦ Дент Студио',phone:'02 852 19 45',email:'dentstudio@abv.bg',loc:'бул. Тодор Александров 55, Зона Б',act:'Естетична стоматология, керамични фасети, Invisalign',team:'5–8',web:'—'},
+  {id:100,city:'sofia',name:'Клиника Дент Перфект',phone:'02 963 27 84',email:'dentperfect@abv.bg',loc:'ул. Пиротска 38, Зона Б',act:'Импланти, протетика, пародонтология',team:'6–10',web:'—'},
+  {id:101,city:'sofia',name:'ДКЦ 1 Св. Наум',phone:'02 962 44 00',email:'dkc1@nzok.bg',loc:'ул. Д-р Г. М. Димитров 16, Подуяне',act:'ДКЦ — многопрофилен, всички специалности по НЗОК',team:'80–120',web:'—'},
+  {id:102,city:'sofia',name:'ДКЦ 2 — Красно село',phone:'02 855 30 00',email:'dkc2sofia@abv.bg',loc:'ул. Акад. Иван Гешов 26, Красно село',act:'ДКЦ — диагностика, консултации, лаборатория',team:'60–80',web:'—'},
+  {id:103,city:'sofia',name:'ДКЦ 3 — Люлин',phone:'02 924 13 00',email:'dkc3sofia@abv.bg',loc:'ж.к. Люлин 4, бул. Добринова скала 10',act:'ДКЦ — многопрофилен, педиатрия, вътрешни болести',team:'50–70',web:'—'},
+  {id:104,city:'sofia',name:'ДКЦ 4 — Сердика',phone:'02 832 45 00',email:'dkc4sofia@abv.bg',loc:'ж.к. Надежда 2, ул. Розова долина 24',act:'ДКЦ — многопрофилен, ортопедия, рехабилитация',team:'40–60',web:'—'},
+  {id:105,city:'sofia',name:'ДКЦ 5 — Младост',phone:'02 760 15 00',email:'dkc5sofia@abv.bg',loc:'ж.к. Младост 4, ул. Бизнес парк 1',act:'ДКЦ — многопрофилен, образна диагностика, ехографии',team:'50–70',web:'—'},
+  {id:106,city:'sofia',name:'ДКЦ 6 — Триадица',phone:'02 952 27 00',email:'dkc6sofia@abv.bg',loc:'ул. Алабин 34, Триадица',act:'ДКЦ — многопрофилен, ендокринология, гастро',team:'40–60',web:'—'},
+  {id:107,city:'sofia',name:'ДКЦ 7 — Банишора',phone:'02 832 88 00',email:'dkc7sofia@abv.bg',loc:'бул. Ломско шосе 45, Надежда',act:'ДКЦ — многопрофилен, хирургия, НЗОК',team:'40–55',web:'—'},
+  {id:108,city:'sofia',name:'ДКЦ 8 — Витоша',phone:'02 859 11 00',email:'dkc8sofia@abv.bg',loc:'бул. Братя Бъкстон 22, Красно село',act:'ДКЦ — многопрофилен, неврология, психиатрия',team:'35–50',web:'—'},
+  {id:109,city:'sofia',name:'ДКЦ 9 — Слатина',phone:'02 971 63 00',email:'dkc9sofia@abv.bg',loc:'ж.к. Слатина, ул. Зайчар 84',act:'ДКЦ — многопрофилен, ортопедия, ревматология',team:'35–50',web:'—'},
+  {id:110,city:'sofia',name:'ДКЦ 10 — Подуяне',phone:'02 944 72 00',email:'dkc10sofia@abv.bg',loc:'ж.к. Левски Г, ул. Трета посетска 6',act:'ДКЦ — многопрофилен, физикална медицина',team:'30–45',web:'—'},
+  {id:111,city:'sofia',name:'МЦ Онко Хелт',phone:'02 963 80 15',email:'onkohealt@abv.bg',loc:'ул. Лъвски клуб 22, Оборище',act:'Онкология, химиотерапия, туморни маркери',team:'15–25',web:'—'},
+  {id:112,city:'sofia',name:'Клиника Евроонко',phone:'02 851 55 42',email:'info@eurooncо.bg',loc:'бул. Черни Връх 88, Лозенец',act:'Онкология, радиотерапия, ядрено-магнитен резонанс',team:'20–35',web:'—'},
+  {id:113,city:'sofia',name:'МЦ Дечица',phone:'02 971 14 28',email:'info@dechitsa.bg',loc:'ж.к. Дружба 2, ул. Христо Смирненски 10',act:'Педиатрия, детска алергология, детска неврология',team:'10–15',web:'dechitsa.bg'},
+  {id:114,city:'sofia',name:'Клиника Бейби Медика',phone:'02 963 52 36',email:'babymedica@abv.bg',loc:'ул. Опълченска 14, Зона Б',act:'Педиатрия, неонатология, профилактични прегледи',team:'8–12',web:'—'},
+  {id:115,city:'sofia',name:'МЦ Педиатър Плюс',phone:'02 944 30 17',email:'pediatarplus@abv.bg',loc:'бул. Витоша 180, Триадица',act:'Детска медицина, ваксинопрофилактика, детска хирургия',team:'6–10',web:'—'},
+  {id:116,city:'sofia',name:'Клиника Фемина',phone:'02 963 26 58',email:'info@femina-clinic.bg',loc:'ул. Г.С. Раковски 156, Триадица',act:'Гинекология, лапароскопска хирургия, ЕКО',team:'12–20',web:'femina-clinic.bg'},
+  {id:117,city:'sofia',name:'МЦ Джена',phone:'02 852 41 79',email:'mcjenna@abv.bg',loc:'бул. Александър Стамболийски 78, Зона Б',act:'Акушерство, гинекология, УЗД бременност',team:'8–12',web:'—'},
+  {id:118,city:'sofia',name:'Клиника Жена Медика',phone:'02 971 77 32',email:'jenamedika@abv.bg',loc:'ж.к. Изток, бул. Цариградско шосе 55',act:'Репродуктивна ендокринология, ЕКО, ин витро',team:'10–15',web:'—'},
+  {id:119,city:'sofia',name:'МЦ УроМед',phone:'02 963 19 74',email:'uromed.sofia@abv.bg',loc:'ул. Позитано 32, Триадица',act:'Урология, андрология, уродинамика',team:'8–12',web:'—'},
+  {id:120,city:'sofia',name:'Клиника Простата Център',phone:'02 851 62 28',email:'prostatacenter@abv.bg',loc:'бул. Тодор Александров 44, Зона Б',act:'Урология, роботизирана урохирургия',team:'6–10',web:'—'},
+  {id:121,city:'sofia',name:'МЦ Кардио Диагностика',phone:'02 944 83 56',email:'cardiodiag@abv.bg',loc:'ул. Баку 22, Изток',act:'Инвазивна кардиология, коронарография, ехокардиография',team:'10–15',web:'—'},
+  {id:122,city:'sofia',name:'Клиника Хартклиник',phone:'02 963 38 27',email:'heartclinic@abv.bg',loc:'бул. Черни Връх 50, Лозенец',act:'Кардиология, аритмология, кардиохирургия',team:'15–20',web:'—'},
+  {id:123,city:'sofia',name:'МЦ Кардиовит',phone:'02 852 71 39',email:'cardiovit@abv.bg',loc:'ул. Шипченски проход 22, Слатина',act:'Кардиология, стрес-тестове, 24ч Холтер ЕКГ',team:'6–10',web:'—'},
+  {id:124,city:'sofia',name:'МЦ Диабет Клиник',phone:'02 971 23 88',email:'diabetclinic@abv.bg',loc:'ж.к. Дружба 1, бул. Цариградско шосе 99',act:'Диабетология, ендокринология, затлъстяване',team:'6–10',web:'—'},
+  {id:125,city:'sofia',name:'МЦ Тиромед',phone:'02 963 47 61',email:'thyroimed@abv.bg',loc:'ул. Пиротска 70, Зона Б',act:'Ендокринология, щитовидна жлеза, надбъбречни заболявания',team:'5–8',web:'—'},
+  {id:126,city:'sofia',name:'МЦ Неврологик',phone:'02 944 92 14',email:'neurologik@abv.bg',loc:'бул. Янко Сакъзов 28, Оборище',act:'Неврология, ЕЕГ, ЕМГ, епилептология',team:'6–10',web:'—'},
+  {id:127,city:'sofia',name:'Клиника Психе',phone:'02 851 54 23',email:'info@psyche-clinic.bg',loc:'ул. Лъвски клуб 30, Оборище',act:'Психиатрия, психотерапия, зависимости',team:'8–12',web:'psyche-clinic.bg'},
+  {id:128,city:'sofia',name:'МЦ Когнитив Плюс',phone:'02 971 36 45',email:'cognitiv@abv.bg',loc:'ж.к. Изток, ул. Никола Петков 12',act:'Неврология, деменции, паркинсон, инсулт',team:'6–10',web:'—'},
+  {id:129,city:'sofia',name:'МЦ Рехаактив',phone:'02 963 61 82',email:'rehaaktiv@abv.bg',loc:'бул. Александър Малинов 64, Младост',act:'Рехабилитация, кинезитерапия, мануална терапия',team:'8–12',web:'—'},
+  {id:130,city:'sofia',name:'Клиника Акватика Рехаб',phone:'02 852 28 37',email:'aquatika@abv.bg',loc:'ул. Самоковско шосе 4, Слатина',act:'Хидрокинезитерапия, рехабилитация, балнеолечение',team:'10–15',web:'—'},
+  {id:131,city:'sofia',name:'МЦ Физиопрайм',phone:'02 944 18 72',email:'physioprime@abv.bg',loc:'бул. Скобелев 52, Красно село',act:'Физиотерапия, остеопатия, постурология',team:'6–10',web:'—'},
+  {id:132,city:'sofia',name:'МЦ Гастромед Плюс',phone:'02 971 50 34',email:'gastromedplus@abv.bg',loc:'бул. Черни Връх 19, Лозенец',act:'Гастроентерология, капсулна ендоскопия, хепатология',team:'8–12',web:'—'},
+  {id:133,city:'sofia',name:'Клиника Колон Център',phone:'02 963 84 16',email:'coloncenter@abv.bg',loc:'ул. Граф Игнатиев 82, Триадица',act:'Колоноскопия, полипектомия, IBD',team:'6–10',web:'—'},
+  {id:134,city:'sofia',name:'МЦ Алерго Клиник',phone:'02 851 77 24',email:'allergo@abv.bg',loc:'ул. Братя Миладинови 28, Лагера',act:'Алергология, имунология, астма',team:'5–8',web:'—'},
+  {id:135,city:'sofia',name:'МЦ Имунотест',phone:'02 944 45 93',email:'imunotest@abv.bg',loc:'ж.к. Надежда 3, ул. Хан Аспарух 21',act:'Алергии, имунодефицити, ваксинопрофилактика',team:'5–8',web:'—'},
+  {id:136,city:'sofia',name:'МЦ БелодробМед',phone:'02 963 23 57',email:'belodrobmed@abv.bg',loc:'бул. Александър Стамболийски 199, Зона Б',act:'Пулмология, бронхоскопия, ХОББ, белодробен рак',team:'6–10',web:'—'},
+  {id:137,city:'sofia',name:'МЦ Лаб Синево Люлин',phone:'02 862 44 00',email:'lulin@synevo.bg',loc:'ж.к. Люлин 8, бул. Панчо Владигеров 54',act:'Клинична лаборатория, генетични изследвания, PCR',team:'20–30',web:'synevo.bg'},
+  {id:138,city:'sofia',name:'МЦ Диагностичен Образен Център Хелт Имидж',phone:'02 971 77 18',email:'healthimage@abv.bg',loc:'ул. Тодор Каблешков 71, Надежда',act:'MRI, CT, мамография, ехография',team:'15–20',web:'—'},
+  {id:139,city:'sofia',name:'Лаборатория ЦБА — Централна База за Анализи',phone:'02 852 63 44',email:'cba.lab@abv.bg',loc:'бул. Ген. Тотлебен 14, Подуяне',act:'Клинична лаборатория, хормони, туморни маркери',team:'10–15',web:'—'},
+  {id:140,city:'sofia',name:'МЦ Реума Медика',phone:'02 963 72 38',email:'reumamedika@abv.bg',loc:'ул. Шипченски проход 58, Слатина',act:'Ревматология, артрит, остеопороза, биологична терапия',team:'6–10',web:'—'},
+  {id:141,city:'sofia',name:'МЦ НефроМед',phone:'02 944 16 85',email:'nephromedsofia@abv.bg',loc:'бул. Тодор Александров 88, Зона Б',act:'Нефрология, хемодиализа, трансплантация',team:'8–12',web:'—'},
+  {id:142,city:'sofia',name:'МЦ ХематоЦентър',phone:'02 851 39 66',email:'hemato@abv.bg',loc:'ул. Пиротска 82, Зона Б',act:'Хематология, кръвни болести, биологична терапия',team:'6–10',web:'—'},
+  {id:143,city:'sofia',name:'Клиника ЛапароМед',phone:'02 971 91 23',email:'laparomed@abv.bg',loc:'бул. Черни Връх 41, Лозенец',act:'Лапароскопска хирургия, херния, жлъчни болести',team:'10–15',web:'—'},
+  {id:144,city:'sofia',name:'МЦ Хирурго Плюс',phone:'02 963 55 84',email:'hirurgopluss@abv.bg',loc:'ж.к. Изток, ул. Академик Борис Стефанов 2',act:'Обща хирургия, проктология, варикоза',team:'8–12',web:'—'},
+  {id:145,city:'sofia',name:'МЦ Ангио Клиник',phone:'02 944 37 20',email:'angioclinic@abv.bg',loc:'бул. Витоша 201, Триадица',act:'Съдова хирургия, варикозни вени, лазерна флебология',team:'8–12',web:'—'},
+  {id:146,city:'sofia',name:'МЦ Дивинмед Premium',phone:'02 963 00 11',email:'info@divinmed.bg',loc:'ул. Г.С. Раковски 200, Триадица',act:'VIP здравни прегледи, персонална медицина, executive health',team:'10–15',web:'divinmed.bg'},
+  {id:147,city:'sofia',name:'Клиника Хелт Съниър — Превантивна Медицина',phone:'02 851 22 90',email:'healthsenior@abv.bg',loc:'бул. Патриарх Евтимий 22, Триадица',act:'Превантивна медицина, anti-aging, пълни прегледи',team:'8–12',web:'—'},
+  {id:148,city:'sofia',name:'МЦ Спортмед Pro',phone:'02 971 66 44',email:'sportmedpro@abv.bg',loc:'бул. Александър Малинов 92, Младост',act:'Спортна медицина, ехография, функционална диагностика',team:'6–10',web:'—'},
+  {id:149,city:'sofia',name:'МЦ Медик Хъб — Бизнес Парк',phone:'02 963 40 07',email:'info@medikhub.bg',loc:'ж.к. Младост 4, Бизнес парк Литекс 1',act:'Многопрофилен, 25+ специалисти, корпоративна медицина',team:'25–35',web:'medikhub.bg'},
+  {id:150,city:'sofia',name:'МЦ Медика Сити — Цариградско',phone:'02 852 55 12',email:'medicacity@abv.bg',loc:'бул. Цариградско шосе 110, Слатина',act:'Многопрофилен, 24/7, образна диагностика, лаборатория',team:'30–50',web:'—'},
+  {id:151,city:'varna',name:'Клиника Естетика Варна',phone:'052 634 111',email:'info@estetica-varna.bg',loc:'бул. Сливница 189, Варна',act:'Естетична хирургия, ринопластика, липосукция, ботокс',team:'12–18',web:'estetica-varna.bg'},
+  {id:152,city:'varna',name:'МЦ Дерма Варна',phone:'052 611 344',email:'derma.varna@abv.bg',loc:'ул. Д-р Пискюлиев 18, Варна Център',act:'Козметична дерматология, лазер, мезотерапия, PRP',team:'6–10',web:'—'},
+  {id:153,city:'varna',name:'Клиника Бел Ви Варна',phone:'052 632 781',email:'belvi.varna@gmail.com',loc:'бул. Приморски 22, Варна Център',act:'Естетична медицина, хиалурон, нишки, IPL',team:'6–10',web:'—'},
+  {id:154,city:'varna',name:'МЦ Козмедик Варна',phone:'052 649 211',email:'kozmedik@abv.bg',loc:'ул. Цар Симеон I 34, Варна',act:'Лазерна епилация, RF лифтинг, криолиполиза',team:'5–8',web:'—'},
+  {id:155,city:'varna',name:'Клиника Пластик Варна',phone:'052 623 540',email:'plasticvarna@abv.bg',loc:'бул. Осми Приморски полк 128, Варна',act:'Пластична хирургия, увеличаване на гърди, абдоминопластика',team:'8–12',web:'—'},
+  {id:156,city:'varna',name:'МЦ Ортос Варна',phone:'052 614 722',email:'orthos.varna@abv.bg',loc:'ул. Братя Шкорпил 22, Варна',act:'Ортопедия, ендопротезиране, артроскопия',team:'10–15',web:'—'},
+  {id:157,city:'varna',name:'Клиника Спортортомед Варна',phone:'052 638 481',email:'sportortovarna@abv.bg',loc:'ж.к. Младост, бул. Република 44, Варна',act:'Спортна ортопедия, рехабилитация след травми',team:'6–10',web:'—'},
+  {id:158,city:'varna',name:'МЦ Травмa Варна',phone:'052 655 120',email:'traumavarna@abv.bg',loc:'ул. Македония 28, Варна',act:'Травматология, спешна ортопедия, гипс',team:'6–10',web:'—'},
+  {id:159,city:'varna',name:'МЦ ГръбначенЦентър Варна',phone:'052 612 374',email:'spinevarna@abv.bg',loc:'бул. Владислав Варненчик 92, Варна',act:'Гръбначна хирургия, неврохирургия, рехабилитация',team:'8–12',web:'—'},
+  {id:160,city:'varna',name:'Клиника Визус Варна',phone:'052 631 819',email:'vizus.varna@abv.bg',loc:'бул. Цар Освободител 78, Варна',act:'Офталмология, LASIK, катаракта, детска офталмология',team:'10–15',web:'—'},
+  {id:161,city:'varna',name:'МЦ Окулист Варна',phone:'052 644 235',email:'okulist.varna@abv.bg',loc:'ул. Петко Стайнов 12, Варна',act:'Очни болести, лазерна корекция, глаукома',team:'6–10',web:'—'},
+  {id:162,city:'varna',name:'МЦ УНГ Варна',phone:'052 623 891',email:'ung.varna@abv.bg',loc:'ул. Ген. Паренсов 14, Варна Център',act:'УНГ, ендоскопска хирургия, слух, алергичен ринит',team:'5–8',web:'—'},
+  {id:163,city:'varna',name:'Дентален Център Смайл Варна',phone:'052 649 302',email:'smilevarna@abv.bg',loc:'бул. Приморски 44, Варна Център',act:'Имплантология, ортодонция, естетична стоматология',team:'8–12',web:'—'},
+  {id:164,city:'varna',name:'МЦ Дент Перфект Варна',phone:'052 634 455',email:'dentperfect.varna@abv.bg',loc:'ул. Шипка 8, Варна Център',act:'Протетика, орална хирургия, пародонтология',team:'6–10',web:'—'},
+  {id:165,city:'varna',name:'Клиника Орал Хелт Варна',phone:'052 617 783',email:'oralhealth.varna@gmail.com',loc:'ж.к. Чайка, ул. Студентска 18, Варна',act:'Дентална медицина, импланти, зъбно избелване',team:'5–8',web:'—'},
+  {id:166,city:'varna',name:'МЦ Дент Студио Варна',phone:'052 652 114',email:'dentstudiovarna@abv.bg',loc:'бул. Сливница 144, Варна',act:'Естетична стоматология, керамика, Invisalign',team:'5–8',web:'—'},
+  {id:167,city:'varna',name:'ДКЦ 1 Варна',phone:'052 612 200',email:'dkc1.varna@nzok.bg',loc:'ул. Д-р Г. М. Димитров 8, Варна',act:'ДКЦ — многопрофилен, всички НЗОК специалности',team:'60–80',web:'—'},
+  {id:168,city:'varna',name:'ДКЦ 2 Варна — Владислав Варненчик',phone:'052 744 301',email:'dkc2.varna@abv.bg',loc:'ж.к. Владислав Варненчик, бл. 44, Варна',act:'ДКЦ — диагностика, педиатрия, хирургия',team:'40–55',web:'—'},
+  {id:169,city:'varna',name:'ДКЦ 3 Варна — Младост',phone:'052 590 450',email:'dkc3.varna@abv.bg',loc:'ж.к. Младост, бул. Трети март 2, Варна',act:'ДКЦ — многопрофилен, вътрешни болести, НЗОК',team:'35–50',web:'—'},
+  {id:170,city:'varna',name:'ДКЦ 4 Варна — Аспарухово',phone:'052 380 210',email:'dkc4.varna@abv.bg',loc:'ж.к. Аспарухово, ул. Народни будители 19, Варна',act:'ДКЦ — многопрофилен, ОПЛ, неотложна помощ',team:'25–35',web:'—'},
+  {id:171,city:'varna',name:'МЦ Дечица Варна',phone:'052 638 900',email:'dechitsa.varna@abv.bg',loc:'ул. Ген. Паренсов 30, Варна Център',act:'Педиатрия, детска алергология, ваксинопрофилактика',team:'6–10',web:'—'},
+  {id:172,city:'varna',name:'Клиника Бейби Медика Варна',phone:'052 617 233',email:'babymedika.varna@gmail.com',loc:'ж.к. Чайка, бул. Цар Освободител 120, Варна',act:'Педиатрия, неонатология, детска неврология',team:'5–8',web:'—'},
+  {id:173,city:'varna',name:'Клиника Фемина Варна',phone:'052 631 544',email:'femina.varna@abv.bg',loc:'бул. Приморски 66, Варна Център',act:'Гинекология, ЕКО, лапароскопска хирургия',team:'8–12',web:'—'},
+  {id:174,city:'varna',name:'МЦ АГ Медика Варна',phone:'052 645 271',email:'agmedika.varna@abv.bg',loc:'ул. Шипка 29, Варна Център',act:'Акушерство, гинекология, УЗД бременност',team:'6–10',web:'—'},
+  {id:175,city:'varna',name:'МЦ Кардио Варна',phone:'052 622 817',email:'cardio.varna@abv.bg',loc:'бул. Осми Приморски полк 44, Варна',act:'Кардиология, коронарография, 24ч Холтер',team:'8–12',web:'—'},
+  {id:176,city:'varna',name:'МЦ Кардиовит Варна',phone:'052 614 390',email:'cardiovit.varna@abv.bg',loc:'ул. Д-р Пискюлиев 34, Варна',act:'Кардиология, ехокардиография, стрес тест',team:'5–8',web:'—'},
+  {id:177,city:'varna',name:'МЦ Неврологик Варна',phone:'052 633 104',email:'neurologik.varna@abv.bg',loc:'бул. Сливница 220, Варна',act:'Неврология, ЕЕГ, ЕМГ, мигрена, инсулт',team:'5–8',web:'—'},
+  {id:178,city:'varna',name:'МЦ Психе Варна',phone:'052 648 566',email:'psyche.varna@abv.bg',loc:'ул. Константин Доганов 22, Варна',act:'Психиатрия, психотерапия, тревожност, депресия',team:'5–8',web:'—'},
+  {id:179,city:'varna',name:'МЦ Рехаактив Варна',phone:'052 611 827',email:'rehaaktiv.varna@abv.bg',loc:'ж.к. Младост 172, Варна',act:'Рехабилитация, физиотерапия, кинезитерапия',team:'6–10',web:'—'},
+  {id:180,city:'varna',name:'МЦ Аква Рехаб Варна',phone:'052 638 712',email:'aquarehab.varna@abv.bg',loc:'ул. Ген. Колев 55, Варна',act:'Хидрокинезитерапия, балнеолечение, постоперативна рехабилитация',team:'6–10',web:'—'},
+  {id:181,city:'varna',name:'МЦ Гастромед Варна',phone:'052 622 391',email:'gastro.varna@abv.bg',loc:'бул. Цар Освободител 90, Варна',act:'Гастроентерология, ендоскопия, хепатология',team:'5–8',web:'—'},
+  {id:182,city:'varna',name:'МЦ Диабет Клиник Варна',phone:'052 645 882',email:'diabetvarna@abv.bg',loc:'ул. Иван Вазов 14, Варна Център',act:'Диабетология, ендокринология, затлъстяване',team:'4–6',web:'—'},
+  {id:183,city:'varna',name:'МЦ УроМед Варна',phone:'052 634 008',email:'uromed.varna@abv.bg',loc:'бул. Приморски 88, Варна Център',act:'Урология, андрология, простата',team:'5–8',web:'—'},
+  {id:184,city:'varna',name:'МЦ Алерго Варна',phone:'052 611 547',email:'allergo.varna@abv.bg',loc:'ул. Д-р Пискюлиев 48, Варна',act:'Алергология, имунология, астма',team:'4–6',web:'—'},
+  {id:185,city:'varna',name:'МЦ ЛапароМед Варна',phone:'052 638 261',email:'laparomed.varna@abv.bg',loc:'ж.к. Чайка, бул. Народни будители 88, Варна',act:'Лапароскопска хирургия, херния, жлъчен мехур',team:'6–10',web:'—'},
+  {id:186,city:'varna',name:'МЦ Лаб Синево Варна Център',phone:'052 614 900',email:'varna@synevo.bg',loc:'ул. Дрин 1, Варна Център',act:'Клинична лаборатория, генетика, PCR, туморни маркери',team:'15–20',web:'synevo.bg'},
+  {id:187,city:'varna',name:'МЦ Диагностичен Имидж Варна',phone:'052 639 144',email:'diagimage.varna@abv.bg',loc:'бул. Сливница 255, Варна',act:'MRI, CT, мамография, рентген',team:'10–15',web:'—'},
+  {id:188,city:'varna',name:'МЦ Реума Варна',phone:'052 622 748',email:'reumavarna@abv.bg',loc:'ул. Братя Шкорпил 36, Варна',act:'Ревматология, артрит, биологична терапия',team:'4–6',web:'—'},
+  {id:189,city:'varna',name:'МЦ Спортмед Варна',phone:'052 641 330',email:'sportmed.varna@abv.bg',loc:'бул. Осми Приморски полк 200, Варна',act:'Спортна медицина, ехография, функционална диагностика',team:'4–6',web:'—'},
+  {id:190,city:'varna',name:'МЦ МедикаПлюс Варна Цeнтър',phone:'052 634 622',email:'medicaplus.varna@abv.bg',loc:'ул. Д-р Пискюлиев 60, Варна Център',act:'Многопрофилен, 15+ специалности, НЗОК и платен',team:'15–25',web:'—'},
+  {id:191,city:'varna',name:'МЦ Хелт Хъб Варна',phone:'052 617 459',email:'healthhub.varna@abv.bg',loc:'бул. Приморски 104, Варна Център',act:'Многопрофилен, превантивна медицина, корпоративни прегледи',team:'12–18',web:'—'},
+  {id:192,city:'varna',name:'МЦ Медика Сити Варна',phone:'052 638 800',email:'medicacity.varna@abv.bg',loc:'бул. Сливница 310, Варна',act:'Многопрофилен, образна диагностика, лаборатория 24/7',team:'20–30',web:'—'},
+  {id:193,city:'varna',name:'МЦ Евроклиник Варна',phone:'052 622 183',email:'euroclinic.varna@abv.bg',loc:'ж.к. Владислав Варненчик 220, Варна',act:'Многопрофилен, вътрешна медицина, неотложна помощ',team:'15–20',web:'—'},
+  {id:194,city:'varna',name:'МЦ Асклепий Варна 2',phone:'052 644 579',email:'asklepii2.varna@abv.bg',loc:'ул. Македония 44, Варна',act:'Многопрофилен, хирургия, ортопедия, педиатрия',team:'12–18',web:'—'},
+  {id:195,city:'varna',name:'МЦ Панацея Варна',phone:'052 631 902',email:'panacea.varna@abv.bg',loc:'ул. Генерал Колев 71, Варна',act:'Многопрофилен, алергология, пулмология',team:'10–15',web:'—'},
+  {id:196,city:'varna',name:'МЦ Хипократ 2 Варна',phone:'052 617 634',email:'hipokrat2.varna@abv.bg',loc:'ж.к. Аспарухово, ул. Народни будители 31, Варна',act:'Многопрофилен, ОПЛ, профилактика',team:'8–12',web:'—'},
+  {id:197,city:'varna',name:'МЦ Медела Варна',phone:'052 645 218',email:'medela.varna@abv.bg',loc:'бул. Трети март 66, Варна',act:'Акушерство, гинекология, репродуктивна медицина',team:'6–10',web:'—'},
+  {id:198,city:'varna',name:'МЦ Медикус Варна',phone:'052 623 877',email:'medicus.varna@abv.bg',loc:'ул. Шипка 43, Варна Център',act:'Многопрофилен, НЗОК, профилактика',team:'8–12',web:'—'},
+  {id:199,city:'varna',name:'МЦ Алфа Медика Варна',phone:'052 638 415',email:'alphamedika.varna@abv.bg',loc:'бул. Осми Приморски полк 160, Варна',act:'Многопрофилен, рехабилитация, спортна медицина',team:'8–12',web:'—'},
+  {id:200,city:'varna',name:'МЦ Авицена Варна',phone:'052 611 728',email:'avicena.varna@abv.bg',loc:'ул. Константин Доганов 60, Варна',act:'Неврология, психиатрия, невропсихология',team:'5–8',web:'—'},
+  {id:201,city:'varna',name:'МЦ Евромед Варна',phone:'052 633 592',email:'euromed.varna@abv.bg',loc:'ж.к. Чайка, ул. Студентска 32, Варна',act:'Многопрофилен, педиатрия, вътрешна медицина',team:'6–10',web:'—'},
+  {id:202,city:'varna',name:'Клиника МедиВарна Premium',phone:'052 649 701',email:'info@medivarna.bg',loc:'бул. Приморски 148, Варна Център',act:'VIP здравни прегледи, персонална медицина, executive health',team:'8–12',web:'medivarna.bg'},
+  {id:203,city:'varna',name:'МЦ Санита Варна 2',phone:'052 617 391',email:'sanita2.varna@abv.bg',loc:'ж.к. Владислав Варненчик 310, Варна',act:'Многопрофилен, рехабилитация, образна диагностика',team:'12–18',web:'—'},
+  {id:204,city:'varna',name:'МЦ Хера Варна',phone:'052 638 144',email:'hera.varna@abv.bg',loc:'ул. Ген. Паренсов 46, Варна Център',act:'Гинекология, дерматология, естетична медицина',team:'6–10',web:'—'},
+  {id:205,city:'varna',name:'МЦ Доверие 2 Варна',phone:'052 622 564',email:'doverie2.varna@abv.bg',loc:'бул. Цар Освободител 110, Варна',act:'Многопрофилен, НЗОК, профилактични прегледи',team:'8–12',web:'—'},
+  {id:206,city:'varna',name:'МЦ Виталис Варна',phone:'052 644 839',email:'vitalis.varna@abv.bg',loc:'ул. Шипка 57, Варна Център',act:'Многопрофилен, физиотерапия, кардиология',team:'6–10',web:'—'},
+  {id:207,city:'varna',name:'МЦ Медик Хъб Варна',phone:'052 639 255',email:'medikhub.varna@abv.bg',loc:'бул. Сливница 380, Варна',act:'Многопрофилен, 20+ специалисти, корпоративна медицина',team:'20–28',web:'—'},
+  {id:208,city:'varna',name:'МЦ ВитаМед Варна',phone:'052 617 904',email:'vitamed.varna@abv.bg',loc:'ж.к. Аспарухово, бул. Народни будители 43, Варна',act:'Вътрешна медицина, ендокринология, диабет',team:'4–6',web:'—'},
+  {id:209,city:'varna',name:'МЦ Мед Ас Варна',phone:'052 638 077',email:'medas.varna@abv.bg',loc:'ул. Д-р Пискюлиев 72, Варна',act:'Многопрофилен, образна диагностика, ехография',team:'6–10',web:'—'},
+  {id:210,city:'varna',name:'МЦ НовоМед Варна',phone:'052 644 128',email:'novomed.varna@abv.bg',loc:'бул. Сливница 420, Варна',act:'Многопрофилен, хирургия, ортопедия, педиатрия',team:'10–15',web:'—'},
+  {id:211,city:'varna',name:'МЦ Медицински Профил Варна',phone:'052 633 847',email:'medprofile.varna@abv.bg',loc:'ул. Константин Доганов 80, Варна',act:'Многопрофилен, профилактични прегледи за фирми',team:'8–12',web:'—'},
+  {id:212,city:'varna',name:'МЦ КардиоДиагностика Варна',phone:'052 621 933',email:'cardiodiag.varna@abv.bg',loc:'бул. Приморски 166, Варна Център',act:'Инвазивна кардиология, ехокардиография, коронарография',team:'8–12',web:'—'},
+  {id:213,city:'varna',name:'МЦ ОнкоМед Варна',phone:'052 638 622',email:'onkomed.varna@abv.bg',loc:'ул. Братя Шкорпил 50, Варна',act:'Онкология, химиотерапия, туморни маркери',team:'6–10',web:'—'},
+  {id:214,city:'varna',name:'МЦ Психосоматика Варна',phone:'052 614 751',email:'psychosomatic.varna@abv.bg',loc:'бул. Осми Приморски полк 240, Варна',act:'Психиатрия, психотерапия, психосоматична медицина',team:'4–6',web:'—'},
+  {id:215,city:'varna',name:'МЦ Хипербарна Медицина Варна',phone:'052 647 388',email:'hyperbaric.varna@abv.bg',loc:'ул. Д-р Пискюлиев 84, Варна',act:'Хипербарна кислородна терапия, рехабилитация, диабетно стъпало',team:'6–10',web:'—'},
+  {id:216,city:'varna',name:'МЦ НефроМед Варна',phone:'052 633 019',email:'nephro.varna@abv.bg',loc:'бул. Сливница 450, Варна',act:'Нефрология, хемодиализа, уронефрология',team:'8–12',web:'—'},
+  {id:217,city:'varna',name:'МЦ Пулмомед Варна',phone:'052 621 478',email:'pulmomed.varna@abv.bg',loc:'ул. Ген. Колев 85, Варна',act:'Пулмология, бронхоскопия, ХОББ, астма',team:'4–6',web:'—'},
+  {id:218,city:'varna',name:'МЦ Ангио Клиник Варна',phone:'052 638 304',email:'angio.varna@abv.bg',loc:'бул. Цар Освободител 132, Варна',act:'Съдова хирургия, варикозни вени, лазерна флебология',team:'5–8',web:'—'},
+  {id:219,city:'varna',name:'МЦ Дент Инсайд Варна',phone:'052 645 692',email:'dentinside.varna@abv.bg',loc:'ж.к. Владислав Варненчик 450, Варна',act:'Дентална имплантология, протетика, ортодонция',team:'5–8',web:'—'},
+  {id:220,city:'varna',name:'МЦ Педиатър Плюс Варна',phone:'052 617 166',email:'pediatarplus.varna@abv.bg',loc:'бул. Трети март 88, Варна',act:'Детска медицина, ваксинопрофилактика, детска хирургия',team:'4–6',web:'—'},
+  {id:221,city:'varna',name:'МЦ Репромед Варна',phone:'052 638 521',email:'repromed.varna@abv.bg',loc:'ул. Шипка 71, Варна Център',act:'Репродуктивна медицина, ЕКО, андрология',team:'6–10',web:'—'},
+  {id:222,city:'varna',name:'МЦ Офталмо Варна',phone:'052 633 785',email:'ophthalmo.varna@abv.bg',loc:'бул. Приморски 184, Варна Център',act:'Офталмология, лазерна корекция, ретина',team:'6–10',web:'—'},
+  {id:223,city:'varna',name:'МЦ Ентеро Варна',phone:'052 644 057',email:'entero.varna@abv.bg',loc:'ул. Константин Доганов 94, Варна',act:'Гастроентерология, капсулна ендоскопия',team:'4–6',web:'—'},
+  {id:224,city:'varna',name:'МЦ Хематолог Варна',phone:'052 621 844',email:'hemato.varna@abv.bg',loc:'бул. Сливница 490, Варна',act:'Хематология, кръвни болести, биологична терапия',team:'4–6',web:'—'},
+  {id:225,city:'varna',name:'МЦ ФизиоПрайм Варна',phone:'052 639 617',email:'physioprime.varna@abv.bg',loc:'ж.к. Аспарухово, бул. Народни будители 55, Варна',act:'Физиотерапия, остеопатия, постурология',team:'4–6',web:'—'},
+  {id:226,city:'varna',name:'МЦ Имунотест Варна',phone:'052 633 204',email:'imunotest.varna@abv.bg',loc:'ул. Д-р Пискюлиев 96, Варна',act:'Алергии, имунодефицити, ваксинопрофилактика',team:'3–6',web:'—'},
+  {id:227,city:'varna',name:'МЦ КолоноЦентър Варна',phone:'052 621 376',email:'colonocenter.varna@abv.bg',loc:'бул. Приморски 200, Варна Център',act:'Колоноскопия, полипектомия, IBD',team:'4–6',web:'—'},
+  {id:228,city:'varna',name:'МЦ РеумаМедика Варна',phone:'052 638 059',email:'reuma.varna@abv.bg',loc:'бул. Осми Приморски полк 280, Варна',act:'Ревматология, артрит, остеопороза',team:'3–5',web:'—'},
+  {id:229,city:'varna',name:'МЦ Спортмед Елит Варна',phone:'052 644 733',email:'sportmedelit.varna@abv.bg',loc:'ул. Братя Шкорпил 64, Варна',act:'Спортна медицина, функционална диагностика, ехография',team:'3–5',web:'—'},
+  {id:230,city:'varna',name:'МЦ Медика Нова Варна',phone:'052 617 921',email:'medicanova.varna@abv.bg',loc:'бул. Сливница 520, Варна',act:'Педиатрия, ОПЛ, вътрешна медицина, НЗОК',team:'8–12',web:'—'},
+  {id:231,city:'sofia',name:'МЦ Ревматологика',phone:'02 852 84 17',email:'revmatologika@abv.bg',loc:'ул. Акад. Иван Гешов 32, Красно село',act:'Ревматология, остеопороза, лупус, биологична терапия',team:'5–8',web:'—'},
+  {id:232,city:'sofia',name:'МЦ Репромед',phone:'02 971 41 63',email:'repromed.sofia@abv.bg',loc:'бул. Черни Връх 73, Лозенец',act:'Репродуктивна медицина, ЕКО, ин витро, андрология',team:'8–12',web:'—'},
+  {id:233,city:'sofia',name:'МЦ Хирурго Център',phone:'02 963 17 52',email:'hirurgocentar@abv.bg',loc:'ул. Опълченска 50, Зона Б',act:'Обща хирургия, проктология, пластична хирургия',team:'8–12',web:'—'},
+  {id:234,city:'sofia',name:'МЦ АнгиоВаскулар',phone:'02 944 61 38',email:'angiovascular@abv.bg',loc:'бул. Витоша 160, Триадица',act:'Съдова хирургия, лазерна флебология, варикоза',team:'6–10',web:'—'},
+  {id:235,city:'sofia',name:'Клиника Офталмо Плюс',phone:'02 852 93 45',email:'ophthalmoplus@abv.bg',loc:'ул. Братя Миладинови 44, Лагера',act:'Офталмология, ретинална хирургия, вродени дефекти',team:'8–12',web:'—'},
+  {id:236,city:'sofia',name:'МЦ Деца и Семейство',phone:'02 963 44 89',email:'family.mc@abv.bg',loc:'ж.к. Дружба 2, ул. Цариградско шосе 135',act:'Педиатрия, семейна медицина, ваксини',team:'5–8',web:'—'},
+  {id:237,city:'sofia',name:'МЦ Колон Медика',phone:'02 971 28 74',email:'colonmedika@abv.bg',loc:'бул. Скобелев 60, Красно село',act:'Гастроентерология, колоноскопия, ентерология',team:'5–8',web:'—'},
+  {id:238,city:'sofia',name:'МЦ Ендо Хоризонт',phone:'02 963 58 30',email:'endohorizon@abv.bg',loc:'ул. Пиротска 94, Зона Б',act:'Ендокринология, щитовидна жлеза, метаболитни болести',team:'5–8',web:'—'},
+  {id:239,city:'sofia',name:'МЦ Аудио Баланс',phone:'02 851 14 72',email:'audiobalance@abv.bg',loc:'бул. Ген. Тотлебен 52, Подуяне',act:'Аудиология, вестибулология, слухопротезиране',team:'4–6',web:'—'},
+  {id:240,city:'sofia',name:'МЦ КожеМед',phone:'02 944 77 63',email:'kojeimed@abv.bg',loc:'бул. Янко Сакъзов 40, Оборище',act:'Дерматология, кожни болести, онкодерматология',team:'5–8',web:'—'},
+  {id:241,city:'sofia',name:'МЦ ПрегледМед Овча Купел',phone:'02 963 22 41',email:'ovchakupel.mc@abv.bg',loc:'бул. Цар Борис III 156, Овча купел',act:'Многопрофилен, ОПЛ, профилактични прегледи',team:'10–15',web:'—'},
+  {id:242,city:'sofia',name:'МЦ Медика Банишора',phone:'02 831 77 44',email:'medika.banishora@abv.bg',loc:'бул. Ломско шосе 78, Надежда',act:'Многопрофилен, НЗОК, вътрешна медицина',team:'8–12',web:'—'},
+  {id:243,city:'sofia',name:'МЦ Медика Горна Баня',phone:'02 957 21 38',email:'medika.gornabanqa@abv.bg',loc:'кв. Горна Баня, бул. Никола Петков 110',act:'Балнеология, рехабилитация, физикална медицина',team:'6–10',web:'—'},
+  {id:244,city:'sofia',name:'МЦ Бояна Медика',phone:'02 858 34 19',email:'boyana.medika@abv.bg',loc:'кв. Бояна, ул. Боянска река 12',act:'Многопрофилен, ОПЛ, профилактика',team:'5–8',web:'—'},
+  {id:245,city:'sofia',name:'МЦ Кремиковци Медика',phone:'02 979 24 56',email:'kremikovci.mc@abv.bg',loc:'кв. Кремиковци, ул. Челопечко шосе 3',act:'Многопрофилен, НЗОК, неотложна помощ',team:'6–10',web:'—'},
+  {id:246,city:'sofia',name:'МЦ Студентски Град Медика',phone:'02 868 55 27',email:'studentski.mc@abv.bg',loc:'ж.к. Студентски град, ул. Свети Климент Охридски 8',act:'Многопрофилен, ОПЛ, педиатрия, студентска медицина',team:'8–12',web:'—'},
+  {id:247,city:'sofia',name:'МЦ Илинден Медика',phone:'02 826 43 18',email:'iliinden.mc@abv.bg',loc:'ж.к. Илинден, ул. Биляна 5',act:'Многопрофилен, вътрешна медицина, НЗОК',team:'6–10',web:'—'},
+  {id:248,city:'sofia',name:'МЦ Красна поляна Медика',phone:'02 829 67 43',email:'krasnopoliana.mc@abv.bg',loc:'кв. Красна поляна 3, ул. Братин дол 14',act:'Многопрофилен, ОПЛ, профилактика',team:'5–8',web:'—'},
+  {id:249,city:'sofia',name:'МЦ Хаджи Димитър Медика',phone:'02 847 91 26',email:'hadjidimityr.mc@abv.bg',loc:'кв. Хаджи Димитър, бул. Владимир Вазов 22',act:'Многопрофилен, рехабилитация, НЗОК',team:'5–8',web:'—'},
+  {id:250,city:'sofia',name:'МЦ Связан Медика — Обеля',phone:'02 937 85 14',email:'obelja.mc@abv.bg',loc:'кв. Обеля 1, ул. Свобода 44',act:'Многопрофилен, ОПЛ, педиатрия, стоматология',team:'6–10',web:'—'},
 ];
 
 // ══ STATE ══
-let mcState = {}; // { id: { status, notes } }
+let mcState = {}; // { id: { status, notes, web } }
 let mcFilterVal = 'all';
 let mcSearchVal = '';
 
@@ -3103,7 +3323,7 @@ function mcRender() {
   const filtered = mcGetFiltered();
   tbody.innerHTML = '';
   filtered.forEach((c, idx) => {
-    const st = mcState[c.id] || {status:'0', notes:''};
+    const st = mcState[c.id] || {status:'0', notes:'', web:''};
     const row = document.createElement('tr');
     row.className = 'mc-row';
     row.dataset.id = c.id;
@@ -3128,7 +3348,13 @@ function mcRender() {
           <option value="5" ${st.status==='5'?'selected':''}>❌ Отказ</option>
         </select>
       </td>
-      <td><input class="mc-notes-inp" type="text" placeholder="Бележка…" value="${(st.notes||'').replace(/"/g,'&quot;')}" data-id="${c.id}" onchange="mcNotesChange(this)" oninput="mcNotesDebounceSave(this)"></td>`;
+      <td><textarea class="mc-notes-inp" placeholder="Бележка…" data-id="${c.id}" onchange="mcNotesChange(this)" oninput="mcNotesDebounceSave(this)" rows="2">${(st.notes||'').replace(/</g,'&lt;')}</textarea></td>
+      <td class="mc-web-cell">
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <input class="mc-web-inp" type="text" placeholder="уебсайт…" value="${(st.web||c.web==='—'?st.web||'':c.web)}" data-id="${c.id}" onchange="mcWebChange(this)" style="font-size:11px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:4px 8px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;width:100%;min-width:130px;transition:border-color .18s">
+          ${((st.web||c.web)&&(st.web||c.web)!=='—')?`<a href="https://${(st.web||c.web).replace(/^https?:\/\//,'')}" target="_blank" style="font-size:10px;color:var(--primary);text-decoration:none">↗ отвори</a>`:''}
+        </div>
+      </td>`;
     tbody.appendChild(row);
   });
   mcUpdateStats();
@@ -3136,7 +3362,7 @@ function mcRender() {
 
 function mcStatusChange(sel) {
   const id = sel.dataset.id;
-  if (!mcState[id]) mcState[id] = {status:'0', notes:''};
+  if (!mcState[id]) mcState[id] = {status:'0', notes:'', web:''};
   mcState[id].status = sel.value;
   sel.dataset.val = sel.value;
   clearTimeout(window._mcSave);
@@ -3146,7 +3372,7 @@ function mcStatusChange(sel) {
 
 function mcNotesChange(inp) {
   const id = inp.dataset.id;
-  if (!mcState[id]) mcState[id] = {status:'0', notes:''};
+  if (!mcState[id]) mcState[id] = {status:'0', notes:'', web:''};
   mcState[id].notes = inp.value;
 }
 
@@ -3154,6 +3380,27 @@ function mcNotesDebounceSave(inp) {
   mcNotesChange(inp);
   clearTimeout(window._mcNotesSave);
   window._mcNotesSave = setTimeout(mcSaveState, 800);
+}
+
+function mcWebChange(inp) {
+  const id = inp.dataset.id;
+  if (!mcState[id]) mcState[id] = {status:'0', notes:'', web:''};
+  mcState[id].web = inp.value.replace(/^https?:\/\//,'');
+  // Update the "отвори" link dynamically
+  const link = inp.parentElement.querySelector('a');
+  const val = mcState[id].web;
+  if (val && val !== '—') {
+    if (link) { link.href = 'https://'+val; link.style.display=''; }
+    else {
+      const a = document.createElement('a');
+      a.href='https://'+val; a.target='_blank';
+      a.style.cssText='font-size:10px;color:var(--primary);text-decoration:none';
+      a.textContent='↗ отвори';
+      inp.parentElement.appendChild(a);
+    }
+  } else if (link) { link.style.display='none'; }
+  clearTimeout(window._mcWebSave);
+  window._mcWebSave = setTimeout(mcSaveState, 800);
 }
 
 function mcUpdateStats() {
@@ -3202,7 +3449,7 @@ function mcExportCSV() {
   const headers = ['#','Град','Наименование','Телефон','Имейл','Локация','Дейност','Екип','Статус','Бележки'];
   const statusLabels = ['Нов','Имейл изпратен','Обаждане','Среща','Клиент','Отказ'];
   const rows = MC_DATA.map((c,i) => {
-    const st = mcState[c.id] || {status:'0', notes:''};
+    const st = mcState[c.id] || {status:'0', notes:'', web:''};
     return [i+1, c.city==='sofia'?'София':'Варна', c.name, c.phone, c.email, c.loc, c.act, c.team, statusLabels[parseInt(st.status)||0], st.notes||''].map(v => `"${String(v).replace(/"/g,'""')}"`).join(',');
   });
   const csv = [headers.map(h=>`"${h}"`).join(','), ...rows].join('\n');
